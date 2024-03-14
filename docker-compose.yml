@@ -1,0 +1,33 @@
+version: '3'
+services:
+  web:
+    build: .
+    volumes:
+      - /var/lib/docker_script/ppdedocker1_18_FileUploadService:/app/uploaded_files
+      - ./app:/app
+      - ./.env:/app/.env
+
+    ports:
+      - "8096:80"
+    restart: always
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+    networks:
+        - PPSTD_Extern_01
+
+  db:
+    image: postgres:latest
+    volumes:
+      - ./file_upload_service_database:/var/lib/postgresql/data
+    restart: always
+    networks:
+        - PPSTD_Extern_01
+volumes:
+  postgres_data:
+
+networks:
+  PPSTD_Extern_01:
+    external: 
+        name: PPDEDocker1_Network_STD_01
